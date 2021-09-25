@@ -5,6 +5,7 @@ public class Runner {
         RoomBoss roomBoss = new RoomBoss();
         roomBoss.connect("","");
         roomBoss.createTables();
+//        roomBoss.destroyTables();
 
 //        if (args[0] == "<") {
 //            File file = new File(args[1]);

@@ -4,45 +4,33 @@
     September 24, 2021 - October 5, 2021
  */
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.swing.plaf.nimbus.State;
+import java.sql.*;
 
 
 public class RoomBoss {
 
     private String url = "jdbc:sqlite:db.sqlite";
+    private Connection conn = null;
 
     public RoomBoss(){
         // Do I even need this??
     }
 
     public void connect(String username, String password) {
-        // TODO username/password
+        // TODO username/password close conn
         // confused about connection with username and password
-
-
-        Connection conn = null;
 
         try {
             conn = DriverManager.getConnection(url);
             System.out.println("Connection Established");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
         }
     }
 
     public void createTables() {
-        // TODO
+        // TODO might be done
         // not sure if ids are right
         String rooms = "CREATE TABLE IF NOT EXISTS Rooms (\n" +
                 "id integer PRIMARY KEY,\n" +
@@ -71,19 +59,30 @@ public class RoomBoss {
                 ");";
 
         try {
-            Connection conn = DriverManager.getConnection(url);
             Statement statement = conn.createStatement();
             statement.execute(rooms);
             statement.execute(facilities);
             statement.execute(reservations);
-
+            System.out.println("Tables Created");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void destroyTables() {
-        // TODO
+        String dropRooms = "DROP TABLE IF EXISTS Rooms;";
+        String dropFacilities = "DROP TABLE IF EXISTS Facilities;";
+        String dropReservations = "DROP TABLE IF EXISTS Reservations;";
+
+        try {
+            Statement statement = conn.createStatement();
+            statement.execute(dropRooms);
+            statement.execute(dropFacilities);
+            statement.execute(dropReservations);
+            System.out.println("Tables Destroyed");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public int addRoom(String building, int floor, int room, String directions) {
