@@ -1,10 +1,10 @@
 /*
     Liam Blair
     COS 480 - Database Management Systems
+    Homework 1
     September 24, 2021 - October 5, 2021
  */
 
-import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 
@@ -12,9 +12,15 @@ public class RoomBoss {
 
     private String url = "jdbc:sqlite:db.sqlite";
     private Connection conn = null;
+    private int roomId;
+    private int facilitiesId;
+    private int reservationsId;
 
     public RoomBoss(){
         // Do I even need this??
+        roomId = 0;
+        facilitiesId = 0;
+        reservationsId = 0;
     }
 
     public void connect(String username, String password) {
@@ -33,7 +39,7 @@ public class RoomBoss {
         // TODO might be done
         // not sure if ids are right
         String rooms = "CREATE TABLE IF NOT EXISTS Rooms (\n" +
-                "id integer PRIMARY KEY,\n" +
+                "id varchar(20) NOT NULL PRIMARY KEY,\n" +
                 "building varchar(20) NOT NULL,\n" +
                 "floor integer NOT NULL,\n" +
                 "room integer NOT NULL,\n" +
@@ -41,7 +47,7 @@ public class RoomBoss {
                 ");";
 
         String facilities = "CREATE TABLE IF NOT EXISTS Facilities (\n" +
-                "id integer PRIMARY KEY,\n" +
+                "id varchar(20) NOT NULL PRIMARY KEY,\n" +
                 "building varchar(20) NOT NULL,\n" +
                 "room integer NOT NULL,\n" +
                 "chair integer NOT NULL,\n" +
@@ -85,9 +91,33 @@ public class RoomBoss {
         }
     }
 
-    public int addRoom(String building, int floor, int room, String directions) {
-        // TODO
-        return 0;
+    public String addRoom(String building, int floor, int room, String directions) {
+        // TODO fix keys with previous instance
+//        try {
+//            roomId = getLastId("Rooms");
+//        } catch (NullPointerException e) {
+//            System.out.println(e.getMessage());
+//            roomId = 0;
+//        }
+
+        String insert = "INSERT INTO Rooms(id, building, floor, room, directions) VALUES(?,?,?,?,?)";
+        roomId++;
+        String identifier = "room" + Integer.toString(roomId);
+        System.out.println(identifier);
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(insert);
+            pstmt.setString(1, identifier);
+            pstmt.setString(2, building);
+            pstmt.setInt(3, floor);
+            pstmt.setInt(4, room);
+            pstmt.setString(5, directions);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("Room added");
+        return identifier;
     }
 
     public String findRoom(String s) {
@@ -95,19 +125,19 @@ public class RoomBoss {
         return null;
     }
 
-    public String describeRoom(int identifier) {
+    public String describeRoom(String identifier) {
         // TODO
         return null;
     }
 
-    public int addFacilities(String building, int room, int chairs, int screens, String comments) {
+    public String addFacilities(String building, int room, int chairs, int screens, String comments) {
         // TODO
-        return 0;
+        return "";
     }
 
-    public int addReservation(String start, String end, String building, int room, String name) {
+    public String addReservation(String start, String end, String building, int room, String name) {
         // TODO
-        return 0;
+        return "";
     }
 
     public String describeReservation(int identifier) {
@@ -115,9 +145,9 @@ public class RoomBoss {
         return null;
     }
 
-    public int makeReservation(String pattern, int length, String building, int room, String name) {
+    public String makeReservation(String pattern, int length, String building, int room, String name) {
         // TODO
-        return 0;
+        return "";
     }
 
     public void matchReservation(String pattern, String building, int room) {
@@ -126,6 +156,21 @@ public class RoomBoss {
 
     public void getFreeRoom(String pattern, int length, int chairs, int screens) {
         // TODO
+    }
+
+    private int getLastId(String table) {
+        // TODO doesnt work -- returns 0 every time
+        String request = "SELECT * FROM " + table + " ORDER BY ROWID DESC LIMIT 1";
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(request);
+            System.out.println(rs.getInt("id"));
+            return rs.getInt("id");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
 
 }
