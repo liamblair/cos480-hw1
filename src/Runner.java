@@ -26,6 +26,9 @@ public class Runner {
         roomBoss.describeRoom("room2");
         roomBoss.describeRoom("room6");
 
+        roomBoss.describeReservation("reservation1");
+        roomBoss.describeReservation("reservation5");
+
 
 
 //        if (args[0] == "<") {

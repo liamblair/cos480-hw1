@@ -132,7 +132,7 @@ public class RoomBoss {
     }
 
     public void describeRoom(String identifier) {
-        // TODO works :) prints "ResultSet closed" if nothing found
+        // TODO works :) prints "ResultSet closed" if nothing found tho - should print nothing
         String request = "SELECT * FROM Rooms WHERE id = ?;";
 
         try {
@@ -160,11 +160,11 @@ public class RoomBoss {
             String chairs = Integer.toString(facilitiesRS.getInt("chairs"));
             String screens = Integer.toString(facilitiesRS.getInt("screens"));
 
-            String description = building + separator +
-                    room + separator +
-                    floor + separator +
-                    chairs + separator +
-                    screens;
+            String description = building + separator
+                    + room + separator
+                    + floor + separator
+                    + chairs + separator
+                    + screens;
 
             System.out.println(description);
             preparedStatement.close();
@@ -223,14 +223,38 @@ public class RoomBoss {
         System.out.println(functionTermination);
     }
 
-    public String describeReservation(int identifier) {
-        // TODO
-        return null;
+    public void describeReservation(String identifier) {
+        // TODO prints "ResultSet closed" if nothing found - should print nothing
+        String request = "SELECT * FROM Reservations WHERE cnum = ?;";
+
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(request);
+            preparedStatement.setString(1, identifier);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            String building = rs.getString("building");
+            String room = Integer.toString(rs.getInt("room"));
+            String start = rs.getString("rstart");
+            String end = rs.getString("rend");
+            String name = rs.getString("name");
+
+            String description = building + separator
+                    + room + separator
+                    + start + separator
+                    + end + separator
+                    + name;
+
+            System.out.println(description);
+            preparedStatement.close();
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println(functionTermination);
     }
 
-    public String makeReservation(String pattern, int length, String building, int room, String name) {
+    public void makeReservation(String pattern, int length, String building, int room, String name) {
         // TODO
-        return "";
     }
 
     public void matchReservation(String pattern, String building, int room) {
