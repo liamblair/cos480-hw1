@@ -5,7 +5,7 @@ public class Runner {
         RoomBoss roomBoss = new RoomBoss();
 
         roomBoss.connect("","");
-        roomBoss.destroyTables();
+        //roomBoss.destroyTables();
         roomBoss.createTables();
 
         roomBoss.addRoom("Neville", 1, 110, "Near the north entrance");
@@ -29,7 +29,7 @@ public class Runner {
         roomBoss.describeReservation("reservation1");
         roomBoss.describeReservation("reservation5");
 
-
+        roomBoss.close();
 
 //        if (args[0] == "<") {
 //            File file = new File(args[1]);

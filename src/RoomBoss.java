@@ -20,27 +20,26 @@ public class RoomBoss {
 
     public RoomBoss(){
         // Do I even need this??
-        roomId = 0;
-        facilitiesId = 0;
-        reservationsId = 0;
     }
 
     public void connect(String username, String password) {
-        // TODO username/password close conn
-        // confused about connection with username and password
-
+        // TODO close conn
+        // still confused about username/password should the db correspond to the username?
         try {
             conn = DriverManager.getConnection(url);
             System.out.println("Connection Established");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        roomId = getLastId("Rooms");
+        facilitiesId = getLastId("Facilities");
+        reservationsId = getLastId("Reservations");
+
         System.out.println(functionTermination);
     }
 
     public void createTables() {
-        // TODO might be done
-        // not sure if ids are right
         String rooms = "CREATE TABLE IF NOT EXISTS Rooms (\n" +
                 "id varchar(20) NOT NULL PRIMARY KEY,\n" +
                 "building varchar(20) NOT NULL,\n" +
@@ -72,7 +71,6 @@ public class RoomBoss {
             statement.execute(rooms);
             statement.execute(facilities);
             statement.execute(reservations);
-            System.out.println("Tables Created");
             statement.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -90,7 +88,9 @@ public class RoomBoss {
             statement.execute(dropRooms);
             statement.execute(dropFacilities);
             statement.execute(dropReservations);
-            System.out.println("Tables Destroyed");
+            roomId = 0;
+            facilitiesId = 0;
+            reservationsId = 0;
             statement.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -99,14 +99,6 @@ public class RoomBoss {
     }
 
     public void addRoom(String building, int floor, int room, String directions) {
-        // TODO fix keys with previous instance
-//        try {
-//            roomId = getLastId("Rooms");
-//        } catch (NullPointerException e) {
-//            System.out.println(e.getMessage());
-//            roomId = 0;
-//        }
-
         String insert = "INSERT INTO Rooms(id, building, floor, room, directions) VALUES(?,?,?,?,?);";
         roomId++;
         String identifier = "room" + Integer.toString(roomId);
@@ -128,11 +120,25 @@ public class RoomBoss {
     }
 
     public void findRoom(String s) {
-        // TODO
+        // TODO grab the buildings and directions from the result set and search/sort
+        String request = "SELECT * FROM Rooms";
+
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(request);
+
+
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println(functionTermination);
     }
 
     public void describeRoom(String identifier) {
-        // TODO works :) prints "ResultSet closed" if nothing found tho - should print nothing
+        // TODO works :) prints result set closed sometimes with previous instances on room6
         String request = "SELECT * FROM Rooms WHERE id = ?;";
 
         try {
@@ -140,11 +146,12 @@ public class RoomBoss {
             preparedStatement.setString(1, identifier);
             ResultSet rs = preparedStatement.executeQuery();
 
-            // this is throwing a column out of bounds
-//            if (rs.wasNull()) {
-//                System.out.println(functionTermination);
-//                return;
-//            }
+            if (!rs.next()) {
+                System.out.println(functionTermination);
+                rs.close();
+                preparedStatement.close();
+                return;
+            }
 
             String building = rs.getString("building");
             int roomInt = rs.getInt("room");
@@ -179,7 +186,6 @@ public class RoomBoss {
 
     public void addFacilities(String building, int room, int chairs, int screens) {
         // TODO do i not insert comments? should be done
-        // that error is annoying me
         String insert = "INSERT INTO Facilities(id, building, room, chairs, screens) VALUES(?,?,?,?,?);";
         facilitiesId++;
         String identifier = "facility" + Integer.toString(facilitiesId);
@@ -224,13 +230,19 @@ public class RoomBoss {
     }
 
     public void describeReservation(String identifier) {
-        // TODO prints "ResultSet closed" if nothing found - should print nothing
         String request = "SELECT * FROM Reservations WHERE cnum = ?;";
 
         try {
             PreparedStatement preparedStatement = conn.prepareStatement(request);
             preparedStatement.setString(1, identifier);
             ResultSet rs = preparedStatement.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println(functionTermination);
+                rs.close();
+                preparedStatement.close();
+                return;
+            }
 
             String building = rs.getString("building");
             String room = Integer.toString(rs.getInt("room"));
@@ -266,18 +278,52 @@ public class RoomBoss {
     }
 
     private int getLastId(String table) {
-        // TODO doesnt work -- returns 0 every time
         String request = "SELECT * FROM " + table + " ORDER BY ROWID DESC LIMIT 1;";
+        String id = "";
 
         try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(request);
-            System.out.println(rs.getInt("id"));
-            return rs.getInt("id");
+            if (table.equals("Rooms") || table.equals("Facilities")) {
+                id = rs.getString("id");
+            } else {
+                id = rs.getString("cnum");
+            }
+            rs.close();
+            statement.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return 0;
+
+        if (table.equals("Rooms")) {
+            try {
+                id = id.substring(4);
+            } catch (IndexOutOfBoundsException e) {
+                return 0;
+            }
+            return Integer.valueOf(id);
+        } else if (table.equals("Facilities")) {
+            try {
+                id = id.substring(8);
+            } catch (IndexOutOfBoundsException e) {
+                return 0;
+            }
+            return Integer.valueOf(id);
+        } else {
+            try {
+                id = id.substring(11);
+            } catch (IndexOutOfBoundsException e) {
+                return 0;
+            }
+            return Integer.valueOf(id);
+        }
     }
 
+    public void close() {
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            System.out.print(e.getMessage());
+        }
+    }
 }
