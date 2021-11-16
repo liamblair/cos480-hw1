@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="cronutils.cron.utils" type="repository">
+    <properties maven-id="com.cronutils:cron-utils:9.1.5" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/cronutils/cron-utils/9.1.5/cron-utils-9.1.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/javax.el/3.0.0/javax.el-3.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

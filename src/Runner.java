@@ -5,7 +5,7 @@ public class Runner {
         RoomBoss roomBoss = new RoomBoss();
 
         roomBoss.connect("","");
-        //roomBoss.destroyTables();
+        roomBoss.destroyTables();
         roomBoss.createTables();
 
         roomBoss.addRoom("Neville", 1, 110, "Near the north entrance");
@@ -28,6 +28,16 @@ public class Runner {
 
         roomBoss.describeReservation("reservation1");
         roomBoss.describeReservation("reservation5");
+
+        roomBoss.makeReservation("0 * 15 1 * 2016", 10, "Neville", 210, "Alice");
+
+        roomBoss.matchReservation("0 * 15 1 * 2016", "Neville", 210);
+
+        roomBoss.getFreeRoom("0 * 15 1 * 2017", 10, 10, 0);
+
+        roomBoss.findRoom("nev");
+        roomBoss.findRoom("bet");
+        roomBoss.findRoom("none");
 
         roomBoss.close();
 

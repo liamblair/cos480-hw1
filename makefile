@@ -1,11 +1,3 @@
-# i dont know how this works
-
-# define a variable for compiler flags (JFLAGS)
-# define a variable for the compiler (JC)
-# define a variable for the Java Virtual Machine (JVM)
-
-# define a variable for a parameter. When you run make, you could use:
-# make run FILE="Algo.csv" para sobre escribir el valor de FILE.
 
 JFLAGS = -g
 JC = javac
@@ -38,21 +30,17 @@ FILE=
 #
 
 .java.class:
-        $(JC) $(JFLAGS) $*.java
+	$(JC) $(JFLAGS) $*.java
 
 
 #
 # CLASSES is a macro consisting of N words (one for each java source file)
-# When a single line is too long, use \<return> to split lines that then will be
-# considered as a single line. For example:
-# NAME = Camilo \
-         Juan
-# is understood as
-# NAME = Camilo        Juan
+
 
 CLASSES = \
-        RoomBoss.java \
-        Runner.java
+	src/RoomBoss.java \
+	src/Runner.java \
+	src/Room.java
 
 #
 # MAIN is a variable with the name of the file containing the main method
@@ -92,4 +80,4 @@ run: $(MAIN).class
 #
 
 clean:
-        $(RM) *.class
+	$(RM) *.class
